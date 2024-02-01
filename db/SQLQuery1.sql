@@ -620,12 +620,59 @@ ClientCountryVisits AS (
 ),
 PivotedData AS (
     SELECT user_id,
-        MAX(CASE WHEN country = 'Country A' THEN visit_count ELSE 0 END) as 'Country А'
-
+        MAX(CASE WHEN country = THEN visit_count ELSE 0 END) as 'Country 1',
+		MAX(CASE WHEN country = 'Country B' THEN visit_count ELSE 0 END) as 'Country 2',
+		MAX(CASE WHEN country = 'Country12' THEN visit_count ELSE 0 END) as 'Country 3'
     FROM ClientCountryVisits
     GROUP BY user_id
 )
-SELECT * FROM PivotedData
+SELECT * FROM PivotedData;
+
+WITH MostVisitedCountries AS (
+    SELECT TOP 6 country
+    FROM Points
+    JOIN Routes ON Points.point_id = Routes.to_id
+    JOIN Tours ON Routes.route_id = Tours.route_id
+    JOIN Tickets ON Tours.tour_id = Tickets.tour_id
+    GROUP BY country
+    ORDER BY COUNT(*) DESC
+),
+UserVisits AS (
+    SELECT Users.user_id, Points.country, COUNT(*) as visits
+    FROM Users
+    JOIN Tickets ON Users.user_id = Tickets.user_id
+    JOIN Tours ON Tickets.tour_id = Tours.tour_id
+    JOIN Routes ON Tours.route_id = Routes.route_id
+    JOIN Points ON Routes.to_id = Points.point_id
+    WHERE Points.country IN (SELECT country FROM MostVisitedCountries)
+    GROUP BY Users.user_id, Points.country
+)
+SELECT user_id, SUM(visits) as total_visits
+FROM UserVisits
+GROUP BY user_id;
+
+
+WITH MostVisitedCountries AS (
+    SELECT TOP 6 country
+    FROM Points
+    JOIN Routes ON Points.point_id = Routes.to_id
+    JOIN Tours ON Routes.route_id = Tours.route_id
+    JOIN Tickets ON Tours.tour_id = Tickets.tour_id
+    GROUP BY country
+    ORDER BY COUNT(*) DESC
+),
+UserVisits AS (
+    SELECT Users.user_id, Points.country, COUNT(*) as visits
+    FROM Users
+    JOIN Tickets ON Users.user_id = Tickets.user_id
+    JOIN Tours ON Tickets.tour_id = Tours.tour_id
+    JOIN Routes ON Tours.route_id = Routes.route_id
+    JOIN Points ON Routes.to_id = Points.point_id
+    WHERE Points.country IN (SELECT country FROM MostVisitedCountries)
+    GROUP BY Users.user_id, Points.country
+)
+SELECT user_id, country, visits
+FROM UserVisits;
 
 --------------7----------
 -- Создание таблицы Sights

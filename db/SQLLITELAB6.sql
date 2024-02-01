@@ -8,7 +8,7 @@ UPDATE Employees_Projects SET role = 'Team Lead' WHERE employee_id = 1 AND proje
 COMMIT;
 END TRANSACTION;
 BEGIN TRANSACTION;
-DELETE FROM Employees_Projects WHERE employee_id = 1 AND project_id = 1;
+DELETE FROM Employees_Projects WHERE employee_id = 1 AND project_id = 2;
 COMMIT;
 END TRANSACTION;
 
@@ -36,7 +36,7 @@ BEGIN
     SELECT RAISE (ABORT, 'Invalid date format. Use YYYY-MM-DD.');
 END;
 
-INSERT INTO Employees(employee_id, employee_name, position, hire_date, email) VALUES (4, 'Kate', 'Manager', '2023-03-02', 'kategross@gmail.com');
+INSERT INTO Employees(employee_id, employee_name, position, hire_date, email) VALUES (5, 'Kate', 'Manager', '2023-03-02', 'kateross@gmail.com');
 COMMIT;
 END TRANSACTION;
 
